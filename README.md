@@ -1,14 +1,31 @@
 # PB OS - Personal Portfolio
 
-A unique, interactive personal portfolio website designed as a web-based operating system. Built with modern web technologies, this project simulates a futuristic desktop environment to showcase projects, experience, achievements, and contact information.
+> An interactive personal portfolio designed as a web-based operating system.
+
+PB OS is a futuristic, OS-inspired portfolio experience built to showcase my projects, experience, achievements, skills, and contact information through an interactive desktop environment rather than a traditional portfolio layout.
 
 ## Features
 
-- **Interactive Desktop Interface:** A familiar, yet futuristic OS environment complete with drag-and-drop windows, minimization, and active taskbar functionality.
-- **Custom Boot Sequence:** A realistic system initialization boot screen (with skipped navigation capability and reduced-motion support).
-- **Responsive Window Management:** Fully resizable windows (8-direction resizing) and flexible window layering (z-index) that accurately simulates a real desktop.
-- **Terminal Emulator:** A fully functional terminal UI with interactive commands (`help`, `about`, `contact`, `github`, `echo`, `clear`, etc.). 
-- **Optimized & Responsive:** Carefully crafted CSS to ensure layout integrity and consistent visual rhythms from desktop down to mobile viewports. No global scrollbars; everything is contained within the OS simulation.
+- **Interactive Desktop Interface**  
+  A futuristic desktop environment with draggable windows, minimization, focus management, and an active taskbar.
+
+- **Custom Boot Sequence**  
+  A system-style initialization screen with skip navigation and reduced-motion support.
+
+- **Responsive Window Management**  
+  Windows support dragging, minimization, layering, and 8-direction resizing to simulate a real desktop environment.
+
+- **Terminal Emulator**  
+  An interactive terminal interface with portfolio-specific commands such as `help`, `about`, `projects`, `skills`, `contact`, `github`, `echo`, `clear`, and more.
+
+- **Dynamic Taskbar**  
+  A persistent taskbar that displays active applications, window state, system status, and the current time.
+
+- **Responsive Design**  
+  Carefully designed layouts and interactions that maintain the OS experience across desktop, laptop, tablet, and mobile viewports.
+
+- **OS-Inspired UI**  
+  A custom dark interface with a red and gold visual identity designed specifically for the PB OS experience.
 
 ## Tech Stack
 
@@ -20,47 +37,7 @@ A unique, interactive personal portfolio website designed as a web-based operati
 
 ## Getting Started
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/priyanshuu00/your-repo-name.git
-   ```
+### 1. Clone the repository
 
-2. **Navigate into the directory:**
-   ```bash
-   cd your-repo-name
-   ```
-
-3. **Install dependencies:**
-   This project uses `pnpm`.
-   ```bash
-   pnpm install
-   ```
-   *(Alternatively, use `npm install` or `yarn install` if preferred).*
-
-4. **Run the development server:**
-   ```bash
-   pnpm dev
-   ```
-
-5. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000) to see the PB OS environment in action.
-
-## Deployment
-
-This is a static-ready Next.js application, which means it can be deployed easily with zero configuration on platforms like **Vercel** or **Netlify**.
-
-To create an optimized production build manually:
 ```bash
-pnpm build
-```
-
-## Structure
-
-- `app/page.tsx` - The core entry point containing the desktop grid, taskbar, boot sequence logic, and window manager state.
-- `app/globals.css` - Custom CSS containing the OS window styles, taskbar gradients, desktop grid layout, and terminal aesthetics.
-- `public/` - Contains all static assets including the background video, profile pictures, and project images.
-
-## Contact
-
-- **GitHub:** [@priyanshuu00](https://github.com/priyanshuu00)
-- **LinkedIn:** [Priyanshu Bhatt](https://www.linkedin.com/in/priyanshu-bhatt-1b00b6321/)
+git clone https://github.com/priyanshuu00/pb-os-portfolio.git
