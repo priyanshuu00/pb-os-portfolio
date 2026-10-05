@@ -380,7 +380,22 @@ function WindowBody({ id, openWindow }: { id: WindowId; openWindow: (id: WindowI
 function DesktopWindow({ window, onClose, onMinimize, onFocus, onDrag, onResize, openWindow }: { window: WindowState; onClose: () => void; onMinimize: () => void; onFocus: () => void; onDrag: (x: number, y: number) => void; onResize: (x: number, y: number, w: number, h: number) => void; openWindow: (id: WindowId) => void }) {
   const dragStart = useRef<{ x: number; y: number; left: number; top: number } | null>(null)
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => { onFocus(); dragStart.current = { x: event.clientX, y: event.clientY, left: window.x, top: window.y }; event.currentTarget.setPointerCapture(event.pointerId) }
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => { if (!dragStart.current) return; onDrag(dragStart.current.left + event.clientX - dragStart.current.x, dragStart.current.top + event.clientY - dragStart.current.y) }
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return;
+    let newX = dragStart.current.left + event.clientX - dragStart.current.x;
+    let newY = dragStart.current.top + event.clientY - dragStart.current.y;
+    if (typeof globalThis !== 'undefined' && globalThis.innerWidth) {
+      const desktopWidth = globalThis.innerWidth;
+      const desktopHeight = globalThis.innerHeight;
+      const taskbarHeight = 44;
+      const minVisibleWidth = 100;
+      const titleBarHeight = 34;
+      const w = window.width || 600;
+      newX = Math.max(-(w - minVisibleWidth), Math.min(newX, desktopWidth - minVisibleWidth));
+      newY = Math.max(0, Math.min(newY, desktopHeight - taskbarHeight - titleBarHeight));
+    }
+    onDrag(newX, newY);
+  }
   const stopDrag = () => { dragStart.current = null }
 
   const resizeStart = useRef<{ x: number; y: number; startX: number; startY: number; startW: number; startH: number; dir: string } | null>(null)
@@ -407,6 +422,31 @@ function DesktopWindow({ window, onClose, onMinimize, onFocus, onDrag, onResize,
       newH = Math.max(200, startH - dy);
       if (newH > 200 || dy > 0) newY = startY + (startH - newH);
     }
+
+    if (typeof globalThis !== 'undefined' && globalThis.innerWidth) {
+      const desktopWidth = globalThis.innerWidth;
+      const desktopHeight = globalThis.innerHeight;
+      const taskbarHeight = 44;
+      
+      if (newX < 0) {
+        newW += newX;
+        newX = 0;
+      }
+      if (newY < 0) {
+        newH += newY;
+        newY = 0;
+      }
+      
+      if (newX + newW > desktopWidth) newW = desktopWidth - newX;
+      if (newY + newH > desktopHeight - taskbarHeight) newH = desktopHeight - taskbarHeight - newY;
+      
+      newW = Math.max(320, newW);
+      newH = Math.max(200, newH);
+      
+      if (newX + newW > desktopWidth) newX = Math.max(0, desktopWidth - newW);
+      if (newY + newH > desktopHeight - taskbarHeight) newY = Math.max(0, desktopHeight - taskbarHeight - newH);
+    }
+    
     onResize(newX, newY, newW, newH);
   }
   const stopResize = () => { resizeStart.current = null }
@@ -503,7 +543,24 @@ export default function Page() {
   
   const activeWindowId = windows.length > 0 ? [...windows].sort((a,b) => b.z - a.z).find(w => !w.minimized)?.id || null : null
 
-  const openWindow = (id: WindowId) => { setWindows((current) => { const nextZ = Math.max(...current.map(w => w.z), 10) + 1; const existing = current.find((item) => item.id === id); if (existing) return current.map((item) => item.id === id ? { ...item, minimized: false, z: nextZ } : item); const item = desktopItems.find((entry) => entry.id === id)!; return [...current, { id, title: item.label, icon: item.icon, x: id === 'projects' ? 420 : 260 + current.length * 24, y: id === 'projects' ? 90 : 150 + current.length * 18, width: 600, height: 400, minimized: false, z: nextZ }] }) }
+  const openWindow = (id: WindowId) => {
+    setWindows((current) => {
+      const nextZ = Math.max(...current.map(w => w.z), 10) + 1;
+      const existing = current.find((item) => item.id === id);
+      if (existing) return current.map((item) => item.id === id ? { ...item, minimized: false, z: nextZ } : item);
+      const item = desktopItems.find((entry) => entry.id === id)!;
+      let initialX = id === 'projects' ? 420 : 260 + current.length * 24;
+      let initialY = id === 'projects' ? 90 : 150 + current.length * 18;
+      if (typeof globalThis !== 'undefined' && globalThis.innerWidth) {
+        const desktopWidth = globalThis.innerWidth;
+        const desktopHeight = globalThis.innerHeight;
+        const taskbarHeight = 44;
+        if (initialX + 600 > desktopWidth) initialX = Math.max(0, desktopWidth - 620);
+        if (initialY + 400 > desktopHeight - taskbarHeight) initialY = Math.max(0, desktopHeight - taskbarHeight - 420);
+      }
+      return [...current, { id, title: item.label, icon: item.icon, x: initialX, y: initialY, width: 600, height: 400, minimized: false, z: nextZ }]
+    })
+  }
   const focusWindow = (id: WindowId) => { setWindows((current) => { const nextZ = Math.max(...current.map(w => w.z), 10) + 1; return current.map((item) => item.id === id ? { ...item, z: nextZ, minimized: false } : item); }) }
   const minimizeWindow = (id: WindowId) => { setWindows((current) => current.map((item) => item.id === id ? { ...item, minimized: true } : item)) }
 
