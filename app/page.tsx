@@ -179,7 +179,7 @@ function TerminalApp({ openWindow }: { openWindow: (id: WindowId) => void }) {
         output = experienceItems.map(e => `- ${e.name} (${e.detail})`).join('\n')
         break
       case 'education':
-        output = 'Graphic Era Hill University (B.Tech CS AIML) | Kendriya Vidyalaya (Schooling)'
+        output = 'Graphic Era Hill University | Dehradun\nBachelor of Technology in Computer Science Engineering (Artificial Intelligence & Data Science)\n\nKendriya Vidyalaya, Indian Military Academy | Dehradun\nHigher Secondary (PCM)\n\nKendriya Vidyalaya, Indian Military Academy | Dehradun\nSecondary'
         break
       case 'achievements':
         output = achievementItems.map(a => `- ${a.name}: ${a.detail}`).join('\n')
@@ -500,12 +500,11 @@ function BootScreen({ onComplete }: { onComplete: () => void }) {
 
 export default function Page() {
   const [windows, setWindows] = useState<WindowState[]>([])
-  const [topZ, setTopZ] = useState(10)
   
   const activeWindowId = windows.length > 0 ? [...windows].sort((a,b) => b.z - a.z).find(w => !w.minimized)?.id || null : null
 
-  const openWindow = (id: WindowId) => { setTopZ((z) => z + 1); setWindows((current) => { const existing = current.find((item) => item.id === id); if (existing) return current.map((item) => item.id === id ? { ...item, minimized: false, z: topZ + 1 } : item); const item = desktopItems.find((entry) => entry.id === id)!; return [...current, { id, title: item.label, icon: item.icon, x: id === 'projects' ? 420 : 260 + current.length * 24, y: id === 'projects' ? 90 : 150 + current.length * 18, width: 600, height: 400, minimized: false, z: topZ + 1 }] }) }
-  const focusWindow = (id: WindowId) => { setTopZ((z) => z + 1); setWindows((current) => current.map((item) => item.id === id ? { ...item, z: topZ + 1, minimized: false } : item)) }
+  const openWindow = (id: WindowId) => { setWindows((current) => { const nextZ = Math.max(...current.map(w => w.z), 10) + 1; const existing = current.find((item) => item.id === id); if (existing) return current.map((item) => item.id === id ? { ...item, minimized: false, z: nextZ } : item); const item = desktopItems.find((entry) => entry.id === id)!; return [...current, { id, title: item.label, icon: item.icon, x: id === 'projects' ? 420 : 260 + current.length * 24, y: id === 'projects' ? 90 : 150 + current.length * 18, width: 600, height: 400, minimized: false, z: nextZ }] }) }
+  const focusWindow = (id: WindowId) => { setWindows((current) => { const nextZ = Math.max(...current.map(w => w.z), 10) + 1; return current.map((item) => item.id === id ? { ...item, z: nextZ, minimized: false } : item); }) }
   const minimizeWindow = (id: WindowId) => { setWindows((current) => current.map((item) => item.id === id ? { ...item, minimized: true } : item)) }
 
   const [booted, setBooted] = useState(false);
@@ -535,7 +534,7 @@ export default function Page() {
           <BootScreen onComplete={handleBootComplete} />
         </div>
       )}
-      <main className="os-desktop"><video autoPlay loop muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: -1 }}><source src="/background-video.mp4" type="video/mp4" /></video><div className="desktop-grid" aria-label="Desktop applications"><div className="icon-group left-top">{desktopItems.filter((item) => item.group === 'left-top').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div><div className="icon-group left-middle">{desktopItems.filter((item) => item.group === 'left-middle').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div><div className="icon-group right-top">{desktopItems.filter((item) => item.group === 'right-top').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div><div className="icon-group right-bottom">{desktopItems.filter((item) => item.group === 'right-bottom').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div></div>{windows.map((window) => <DesktopWindow key={window.id} window={window} onClose={() => setWindows((current) => current.filter((item) => item.id !== window.id))} onMinimize={() => minimizeWindow(window.id)} onFocus={() => focusWindow(window.id)} onDrag={(x, y) => setWindows((current) => current.map((item) => item.id === window.id ? { ...item, x, y } : item))} onResize={(x, y, width, height) => setWindows((current) => current.map((item) => item.id === window.id ? { ...item, x, y, width, height } : item))} openWindow={openWindow} />)}<Taskbar windows={windows} activeWindowId={activeWindowId} openWindow={openWindow} minimizeWindow={minimizeWindow} restoreWindow={focusWindow} /></main>
+      <main className="os-desktop"><video autoPlay loop muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: -1 }}><source src="/background-video.mp4" type="video/mp4" /></video><div className="desktop-grid" aria-label="Desktop applications"><div className="icon-group left-top">{desktopItems.filter((item) => item.group === 'left-top').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div><div className="icon-group left-middle">{desktopItems.filter((item) => item.group === 'left-middle').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div><div className="icon-group right-top">{desktopItems.filter((item) => item.group === 'right-top').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div><div className="icon-group right-bottom">{desktopItems.filter((item) => item.group === 'right-bottom').map((item) => <DesktopIcon key={item.id} item={item} onOpen={openWindow} />)}</div></div>{windows.filter(window => !window.minimized).map((window) => <DesktopWindow key={window.id} window={window} onClose={() => setWindows((current) => current.filter((item) => item.id !== window.id))} onMinimize={() => minimizeWindow(window.id)} onFocus={() => focusWindow(window.id)} onDrag={(x, y) => setWindows((current) => current.map((item) => item.id === window.id ? { ...item, x, y } : item))} onResize={(x, y, width, height) => setWindows((current) => current.map((item) => item.id === window.id ? { ...item, x, y, width, height } : item))} openWindow={openWindow} />)}<Taskbar windows={windows} activeWindowId={activeWindowId} openWindow={openWindow} minimizeWindow={minimizeWindow} restoreWindow={focusWindow} /></main>
     </>
   )
 }
