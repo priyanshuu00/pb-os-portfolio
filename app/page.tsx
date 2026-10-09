@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react'
 import {
   Archive,
+  Award,
   BriefcaseBusiness,
   ChevronRight,
   Code,
@@ -56,7 +57,7 @@ function Linkedin(props: any) {
   )
 }
 
-type WindowId = 'profile' | 'resume' | 'experience' | 'achievements' | 'contact' | 'projects' | 'terminal'
+type WindowId = 'profile' | 'resume' | 'experience' | 'achievements' | 'contact' | 'projects' | 'terminal' | 'certifications'
 
 type WindowState = {
   id: WindowId
@@ -78,10 +79,11 @@ const windowContent: Record<WindowId, { eyebrow: string; title: string; body: st
   contact: { eyebrow: 'DIRECTORY', title: 'Contact Me', body: 'Open to thoughtful collaborations, product conversations, and ambitious side quests.' },
   terminal: { eyebrow: 'SYSTEM', title: 'Terminal', body: 'Command line interface for PB OS.' },
   projects: { eyebrow: 'DIRECTORY', title: 'Projects', body: 'A small collection of systems, interfaces, and visual experiments.' },
+  certifications: { eyebrow: 'DIRECTORY', title: 'Certifications', body: 'CERTIFICATIONS & PROFESSIONAL LEARNING' },
 }
 
 const experienceItems = [
-  { name: 'Data Analytics Intern', detail: 'IBM SkillsBuild · Aug - Sept 2026', icon: BriefcaseBusiness, description: 'Participated in a 6-week Data Analytics with AI internship, focusing on data processing, exploratory analysis, machine learning, and visualization. Worked on a real-world final project applying data analytics and AI/ML techniques to derive insights from datasets.', image: '/internship.jpeg' },
+  { name: 'Data Analytics Intern', detail: 'IBM SkillsBuild · Aug - Sept 2026', icon: BriefcaseBusiness, description: `Completed a six-week IBM SkillsBuild Data Analytics with AI Internship through BharatCares, in collaboration with IBM and in association with AICTE. Applied data analytics concepts through an AI-powered customer sales analytics project, working with SQL and MySQL for database analytics and integrating Gemini AI for natural-language root-cause analysis and business strategy generation.`, image: '/internship.jpeg' },
 ]
 const achievementItems = [
   { name: 'Problem Solving & DSA', detail: 'LeetCode · 250+ Questions Solved', icon: Code, description: 'Consistently practiced data structures and algorithms, solving over 250 problems to sharpen logic and optimization skills.', link: 'https://leetcode.com/u/priyanshu_bhatt01/' },
@@ -98,13 +100,22 @@ const projectItems = [
   { name: 'Churn & Retention Intelligence', detail: 'Decision-Support Tool', icon: PieChart, description: 'Owned end-to-end product lifecycle for an AI-powered churn decision-support tool. Developed a Gemini-powered Next-Best-Action engine that converts customer-specific churn drivers into retention recommendations.', tech: 'MySQL, Python, Tableau, Scikit-Learn, Gemini API', link: 'https://github.com/priyanshuu00/churn-prediction' },
 ]
 
-const desktopItems = [
+const certificationsItems = [
+  { title: 'JPMorgan Chase & Co.', subtitle: 'Software Engineering Job Simulation', issuer: 'Forage', date: 'July 2026', description: 'Completed a software engineering job simulation focused on practical engineering tasks, problem-solving, and applying software development concepts to industry-style challenges.', skills: 'Software Engineering, Problem Solving, Software Development', icon: Award, link: '/jp-morgan.pdf' },
+  { title: 'Deloitte', subtitle: 'Data Analytics Job Simulation', issuer: 'Forage', date: '2026', description: 'Completed a data analytics job simulation focused on analytical problem-solving, interpreting data, and applying data-driven approaches to business challenges.', skills: 'Data Analytics, Data Interpretation, Analytical Thinking', icon: Award, link: '/deloitte.pdf' },
+  { title: 'SQL (Advanced) Skill Certification', subtitle: '', issuer: 'HackerRank', date: 'July 2026', description: 'Earned an advanced SQL skill certification demonstrating proficiency in querying relational databases and solving SQL problems.', skills: 'SQL, Relational Databases, Querying', icon: Award, image: '/sql-advanced.png' },
+  { title: 'Python (Basic) Skill Certification', subtitle: '', issuer: 'HackerRank', date: '2026', description: 'Earned a basic Python skill certification demonstrating foundational knowledge and problem-solving in the language.', skills: 'Python, Problem Solving', icon: Award, image: '/python-basic.jpg' },
+  { title: 'Practical GitHub Actions', subtitle: '', issuer: 'LinkedIn Learning', date: 'October 8, 2026', description: 'Completed hands-on training in GitHub Actions, learning the fundamentals of workflow automation and CI/CD concepts for software development.', skills: 'GitHub Actions, Workflow Automation, CI/CD Fundamentals', icon: Award, image: '/linkdin.jpg' },
+]
+
+const desktopItems: { id: WindowId; label: string; icon: any; group: string; large?: boolean }[] = [
   { id: 'profile' as WindowId, label: 'Priyanshu Bhatt', icon: UserRound, group: 'left-top' },
   { id: 'resume' as WindowId, label: 'Download Resume', icon: Download, group: 'left-top' },
   { id: 'experience' as WindowId, label: 'Experience', icon: BriefcaseBusiness, group: 'left-top' },
   { id: 'achievements' as WindowId, label: 'Achievements', icon: Trophy, group: 'left-top' },
   { id: 'terminal' as WindowId, label: 'Terminal', icon: Terminal as any, group: 'right-top' },
   { id: 'projects' as WindowId, label: 'Projects', icon: FolderOpen, group: 'right-top' },
+  { id: 'certifications' as WindowId, label: 'Certifications', icon: Award, group: 'right-top' },
   { id: 'contact' as WindowId, label: 'Contact Me', icon: Mail, group: 'right-top' },
 ]
 
@@ -152,6 +163,7 @@ function TerminalApp({ openWindow }: { openWindow: (id: WindowId) => void }) {
   skills        Technical skills
   projects      List projects
   experience    Work experience
+  certifications Professional certifications
   education     Education
   achievements  Achievements
   resume        Open/download resume
@@ -163,7 +175,8 @@ function TerminalApp({ openWindow }: { openWindow: (id: WindowId) => void }) {
   pwd           Show current directory
   ls            List files
   date          Display current date
-  echo          Print text`
+  echo          Print text
+  open          Open a desktop application`
         break
       case 'about':
       case 'whoami':
@@ -177,6 +190,33 @@ function TerminalApp({ openWindow }: { openWindow: (id: WindowId) => void }) {
         break
       case 'experience':
         output = experienceItems.map(e => `- ${e.name} (${e.detail})`).join('\n')
+        break
+      case 'certifications':
+        if (args[1] === '--help') {
+          output = 'certifications - Display professional certifications and training.\nUsage: certifications'
+        } else {
+          output = `PB OS CERTIFICATIONS\n====================\n\n` + certificationsItems.map((c, i) => {
+            const num = (i + 1).toString().padStart(2, '0')
+            let res = `[${num}] ${c.title}\n`
+            if (c.subtitle) res += `     ${c.subtitle}\n`
+            res += `     Issuer: ${c.issuer}\n     Date: ${c.date}\n     Focus: ${c.skills}`
+            return res
+          }).join('\n\n')
+        }
+        break
+      case 'open':
+        if (args[1]) {
+          const app = args.slice(1).join(' ').toLowerCase()
+          const matched = desktopItems.find(d => d.id === app || d.label.toLowerCase() === app)
+          if (matched) {
+            openWindow(matched.id)
+            output = `Opening ${matched.label}...`
+          } else {
+            output = `Application not found: ${app}`
+          }
+        } else {
+          output = `Usage: open [app_name]\nExample: open certifications`
+        }
         break
       case 'education':
         output = 'Graphic Era Hill University | Dehradun\nBachelor of Technology in Computer Science Engineering (Artificial Intelligence & Data Science)\n\nKendriya Vidyalaya, Indian Military Academy | Dehradun\nHigher Secondary (PCM)\n\nKendriya Vidyalaya, Indian Military Academy | Dehradun\nSecondary'
@@ -370,9 +410,10 @@ function WindowBody({ id, openWindow }: { id: WindowId; openWindow: (id: WindowI
   if (id === 'terminal') return <TerminalApp openWindow={openWindow} />
   if (id === 'profile') return <div className="window-body profile-body"><div className="profile-mark"><img src="/profile.jpg" alt="Profile Photo" onError={(e) => { e.currentTarget.style.display='none'; e.currentTarget.parentElement!.innerHTML = '<span style="font-size: 10px; text-align: center; color: #71827c; line-height: 1.3;">Drop profile.jpg<br/>in public/</span>'; }} /></div><div><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p></div><div className="meta-grid"><span>LOCATION <strong>Dehradun, Uttarakhand</strong></span><span>FOCUS <strong>Data Analytics and Software Development</strong></span></div></div>
   if (id === 'resume') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: '16px 0' }}><a className="download-link" href="/resume-sde.pdf" download><Download /> Resume for SDE role <ChevronRight /></a><a className="download-link" href="/resume-data-analyst.pdf" download><Download /> Resume for Data Analyst role <ChevronRight /></a></div><p className="muted-caption">PDF · Updated Jan 2025</p></div>
-  if (id === 'experience') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="project-list">{experienceItems.map((exp) => { const Icon = exp.icon; return <div key={exp.name} style={{ borderBottom: '1px solid #626563' }}><details style={{ cursor: 'pointer' }}><summary className="project-row" style={{ borderBottom: 'none', listStyle: 'none' }}><Icon /><span><strong>{exp.name}</strong><small>{exp.detail}</small></span><ChevronRight /></summary><div style={{ padding: '0 0 16px 30px', fontSize: '14px', color: '#a8aba6', lineHeight: 1.5 }}><p style={{ marginBottom: '12px' }}>{exp.description}</p>{exp.image && <div style={{ width: '100%', height: '180px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #626563', marginBottom: '8px' }}><img src={exp.image} alt={exp.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span style="color: #626563; font-size: 12px; font-family: monospace;">Drop ' + exp.image + ' in public/ folder</span>'; }} /></div>}</div></details></div> })}</div></div>
+  if (id === 'experience') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="project-list">{experienceItems.map((exp) => { const Icon = exp.icon; return <div key={exp.name} style={{ borderBottom: '1px solid #626563' }}><details style={{ cursor: 'pointer' }}><summary className="project-row" style={{ borderBottom: 'none', listStyle: 'none' }}><Icon /><span><strong>{exp.name}</strong><small>{exp.detail}</small></span><ChevronRight /></summary><div style={{ padding: '0 0 16px 30px', fontSize: '14px', color: '#a8aba6', lineHeight: 1.5 }}><p style={{ marginBottom: '12px' }}>{exp.description}</p>{exp.image && <a href={exp.image} target="_blank" rel="noopener noreferrer" style={{ width: '100%', height: 'auto', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', overflow: 'hidden', display: 'block', border: '1px dashed #626563', marginBottom: '8px', cursor: 'pointer' }}><img src={exp.image} alt={exp.name} style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span style="color: #626563; font-size: 12px; font-family: monospace;">Drop ' + exp.image + ' in public/ folder</span>'; }} /></a>}</div></details></div> })}</div></div>
   if (id === 'achievements') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="project-list">{achievementItems.map((achieve) => { const Icon = achieve.icon; return <div key={achieve.name} style={{ borderBottom: '1px solid #626563' }}><details style={{ cursor: 'pointer' }}><summary className="project-row" style={{ borderBottom: 'none', listStyle: 'none' }}><Icon /><span><strong>{achieve.name}</strong><small>{achieve.detail}</small></span><ChevronRight /></summary><div style={{ padding: '0 0 16px 30px', fontSize: '14px', color: '#a8aba6', lineHeight: 1.5 }}><p style={{ marginBottom: '12px' }}>{achieve.description}</p>{achieve.image && <div style={{ width: '100%', height: '180px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #626563', marginBottom: '8px' }}><img src={achieve.image} alt={achieve.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span style="color: #626563; font-size: 12px; font-family: monospace;">Drop ' + achieve.image + ' in public/ folder</span>'; }} /></div>}{achieve.link && <a href={achieve.link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'rgba(255,255,255,0.1)', border: '1px solid #626563', color: '#eeeae0', borderRadius: '4px', textDecoration: 'none', fontSize: '13px' }}>View Profile <ChevronRight size={14} /></a>}</div></details></div> })}</div></div>
   if (id === 'projects') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="project-list">{projectItems.map((project) => { const Icon = project.icon; return <div key={project.name} style={{ borderBottom: '1px solid #626563' }}><details style={{ cursor: 'pointer' }}><summary className="project-row" style={{ borderBottom: 'none', listStyle: 'none' }}><Icon /><span><strong>{project.name}</strong><small>{project.detail}</small></span><ChevronRight /></summary><div style={{ padding: '0 0 16px 30px', fontSize: '14px', color: '#a8aba6', lineHeight: 1.5 }}><p style={{ marginBottom: '8px' }}>{project.description}</p><p style={{ fontSize: '12px', color: '#e1b12c', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '12px' }}>{project.tech}</p>{project.link && <a href={project.link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'rgba(255,255,255,0.1)', border: '1px solid #626563', color: '#eeeae0', borderRadius: '4px', textDecoration: 'none', fontSize: '13px' }}><GitBranch size={14} /> View Source Code</a>}</div></details></div> })}</div></div>
+  if (id === 'certifications') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="project-list">{certificationsItems.map((cert, idx) => { const Icon = cert.icon; return <div key={idx} style={{ borderBottom: '1px solid #626563' }}><details style={{ cursor: 'pointer' }}><summary className="project-row" style={{ borderBottom: 'none', listStyle: 'none' }}><Icon /><span><strong>{cert.title}{cert.subtitle ? ` - ${cert.subtitle}` : ''}</strong><small>{cert.issuer} · {cert.date}</small></span><ChevronRight /></summary><div style={{ padding: '0 0 16px 30px', fontSize: '14px', color: '#a8aba6', lineHeight: 1.5 }}><p style={{ marginBottom: '8px' }}>{cert.description}</p><p style={{ fontSize: '12px', color: '#e1b12c', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '12px' }}>{cert.skills}</p>{(cert as any).image && <a href={(cert as any).image} target="_blank" rel="noopener noreferrer" style={{ width: '100%', height: 'auto', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', overflow: 'hidden', display: 'block', border: '1px dashed #626563', marginBottom: '8px', cursor: 'pointer' }}><img src={(cert as any).image} alt={cert.title} style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block' }} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span style="color: #626563; font-size: 12px; font-family: monospace;">Drop ' + (cert as any).image + ' in public/ folder</span>'; }} /></a>}{(cert as any).link && <a href={(cert as any).link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'rgba(255,255,255,0.1)', border: '1px solid #626563', color: '#eeeae0', borderRadius: '4px', textDecoration: 'none', fontSize: '13px' }}>View Certificate <ChevronRight size={14} /></a>}</div></details></div> })}</div></div>
   if (id === 'contact') return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="contact-list"><a href="mailto:bhattpriyansh0090@gmail.com"><Mail /> bhattpriyansh0090@gmail.com</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSc2Zjftl_6mujGnTnteNE28tAIHNOpg_o0yLfE_Fc2zjEIE-g/viewform?usp=publish-editor" target="_blank" rel="noreferrer"><FileText /> Suggestions & Queries</a><a href="https://github.com/priyanshuu00" target="_blank" rel="noreferrer"><GitBranch /> github.com/priyanshuu00</a><a href="https://www.linkedin.com/in/priyanshu-bhatt-1b00b6321/" target="_blank" rel="noreferrer"><Linkedin /> linkedin.com/in/priyanshu-bhatt</a></div></div>
   return <div className="window-body"><p className="window-eyebrow">{content.eyebrow}</p><h2>{content.title}</h2><p>{content.body}</p><div className="generic-lines"><span /><span /><span /></div></div>
 }
